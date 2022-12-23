@@ -1,8 +1,13 @@
-
+import matplotlib
 from tensorflow import keras
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from scipy import misc
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
+
 
 class myCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
@@ -56,8 +61,6 @@ def build_model3(data, callbacks):
 
 
 
-
-
 if __name__ == "__main__" :
     xs = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=float)
     ys = np.array([-3.0, -1.0, 1.0, 3.0, 5.0, 7.0], dtype=float)
@@ -107,28 +110,47 @@ if __name__ == "__main__" :
     #print(classifications[0])
     print(data['test_labels'][0])
 
-    model3 = build_model3(data, callbacks)
-    f, ax = plt.subplots(3,4)
+    #model3 = build_model3(data, callbacks)
+    #f, ax = plt.subplots(3,4)
 
     FIRST_IMAGE = 0
     SECOND_IMAGE = 23
     THIRD_IMAGE = 28
     CONV_NUMBER = 1
 
-    layers_outputs = [layer.output for layer in model3.layers]
-    activation_model = tf.keras.models.Model(inputs=model3.input, outputs=layers_outputs)
+    #layers_outputs = [layer.output for layer in model3.layers]
+    #activation_model = tf.keras.models.Model(inputs=model3.input, outputs=layers_outputs)
 
-    for x in range(0, 4):
-        f1 = activation_model.predict(data['test_images'][FIRST_IMAGE].reshape(1, 28, 28, 1))[x]
-        ax[0, x].imshow(f1[0, :, :, CONV_NUMBER], cmap='inferno')
-        ax[0, x].grid(False)
+    #for x in range(0, 4):
+        #f1 = activation_model.predict(data['test_images'][FIRST_IMAGE].reshape(1, 28, 28, 1))[x]
+        #ax[0, x].imshow(f1[0, :, :, CONV_NUMBER], cmap='inferno')
+        #ax[0, x].grid(False)
 
-        f2 = activation_model.predict(data['test_images'][SECOND_IMAGE].reshape(1, 28, 28, 1))[x]
-        ax[1, x].imshow(f2[0, :, :, CONV_NUMBER], cmap='inferno')
-        ax[1, x].grid(False)
+        #f2 = activation_model.predict(data['test_images'][SECOND_IMAGE].reshape(1, 28, 28, 1))[x]
+        #ax[1, x].imshow(f2[0, :, :, CONV_NUMBER], cmap='inferno')
+        #ax[1, x].grid(False)
 
-        f3 = activation_model.predict(data['test_images'][THIRD_IMAGE].reshape(1, 28, 28, 1))[x]
-        ax[2,x].imshow(f3[0, :, :, CONV_NUMBER], cmap='inferno')
-        ax[2,x].grid(False)
+        #f3 = activation_model.predict(data['test_images'][THIRD_IMAGE].reshape(1, 28, 28, 1))[x]
+        #ax[2, x].imshow(f3[0, :, :, CONV_NUMBER], cmap='inferno')
+        #ax[2, x].grid(False)
+
+        # Plays with CONVS
+    ascent_image = misc.ascent()
+
+    #Visualize the Image
+    plt.grid(False)
+    plt.gray()
+    plt.axis('off')
+    plt.imshow(ascent_image)
+    plt.show()
+
+    image_transformed = np.copy(ascent_image)
+    #get the dimensions
+    size_x = image_transformed.shape[0]
+    size_x = image_transformed.shape[1]
+
+    #create 3x3 Filter as 3x3 array
+    filter = [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
+
 
 

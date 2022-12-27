@@ -15,6 +15,13 @@ class myCallback(tf.keras.callbacks.Callback):
             print('\nLoss is low so cancelling training!')
             self.model.stop_training = True
 
+class myCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs={}):
+        if(logs.get('accuracy')>=0.995):
+            print('\nReached 99.5% accuracy so cancelling training!')
+            self.model.stop_training = True
+
+
 
 def build_model1(xs, ys):
     model = keras.Sequential([keras.layers.Dense(1, input_shape=([1]), name="layer1")])
@@ -151,6 +158,8 @@ if __name__ == "__main__" :
 
     #create 3x3 Filter as 3x3 array
     filter = [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
+    #Reshape the images to add an extra dimension
+    #images = images.reshape(totalnumber_of_pics, picture_size, picture_size, 1)
 
 
 

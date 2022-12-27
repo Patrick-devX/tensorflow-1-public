@@ -5,10 +5,13 @@ import numpy as np
 import tensorflow as tf
 import google
 import zipfile
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import matplotlib.pyplot as plt
+import matplotlib.image as mping
 
 
 
-def build_model3(data):
+def build_model(train_generator):
     model = keras.Sequential([
         #Add Convolutions and MaxPooling
         keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=(300, 300, 3)),
@@ -28,19 +31,15 @@ def build_model3(data):
     #Print Model Summary
     model.summary()
     #Compile the model
-    model.compile(optimizer=tf.keras.optimizers.RMSSprop(lr=0.001), loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=tf.keras.optimizers.RMSprop(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
     #Train the modle
     print(f'\nModel Training:')
 
-    model.fit(train_generator,
+    history = model.fit(train_generator,
               steps_per_epoch=8,
               epochs=15,
-              validation_data=validation_generator,
-              validation_steps=8,
-              verbose=2)
-
-    model.evaluate(data['test_images'], data['test_labels'])
-    return model
+              verbose=1)
+    return model, history
 
 
 
@@ -73,6 +72,38 @@ if __name__ == "__main__" :
 
     print(f'total training horses images: {len(os.listdir(train_horse_dir))}')
     print(f'total training human images: {len(os.listdir(train_human_dir))}')
+
+    nrows = 4
+    ncols = 4
+    pic_index = 10
+    fig = plt.gcf()
+    fig.set_size_inches(ncols*4, nrows*4)
+    pic_index += 8
+
+    nex_horse_pics = [os.path.join(train_horse_dir, fname) for fname in train_horse_names[pic_index-8:pic_index]]
+    nex_human_pics = [os.path.join(train_human_dir, fname) for fname in train_human_names[pic_index - 8:pic_index]]
+
+    for i, img_path in enumerate(nex_horse_pics+nex_human_pics):
+        sp = plt.subplot(nrows, ncols, i+1)
+        sp.axis('off')
+        img = mping.imread(img_path)
+        plt.imshow(img)
+    plt.show()
+
+
+
+    #All images will be rescaled by 1./255
+
+    train_datagen = ImageDataGenerator(rescale=1/255)
+    print(train_datagen)
+    train_generator = train_datagen.flow_from_directory(
+        directory='./horse-or-human/',
+        target_size=(300, 300),
+        batch_size=128,
+        class_mode='binary')
+
+    model, history = build_model(train_generator)
+    print(f"The model reached the desired accuracy after {len(history.epoch)} epochs")
 
 
 
